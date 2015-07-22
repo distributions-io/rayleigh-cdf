@@ -1,5 +1,6 @@
 options( digits = 16 )
 library( jsonlite )
+library( VGAM )
 
 sigma = 1
 x = c( -5, -2.5, 0, 2.5, 5 )

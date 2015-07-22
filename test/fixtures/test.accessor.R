@@ -1,8 +1,9 @@
 options( digits = 16 )
 library( jsonlite )
+library( VGAM )
 
-sigma = 1
-x = seq( -1000, 1000, 0.5 )
+sigma = 6
+x = seq( -1, 100, 0.5 )
 y = prayleigh( x, sigma )
 
 cat( y, sep = ",\n" )
