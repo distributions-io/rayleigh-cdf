@@ -6,8 +6,11 @@ Cumulative Distribution Function
 
 The [cumulative distribution function](https://en.wikipedia.org/wiki/Cumulative_distribution_function) for a [Rayleigh](https://en.wikipedia.org/wiki/Rayleigh_distribution) random variable is
 
-<div class="equation" align="center" data-raw-text="" data-equation="eq:cdf">
-	<img src="" alt="Cumulative distribution function for a Rayleigh distribution.">
+<div class="equation" align="center" data-raw-text="F(x;\sigma) = \begin{cases}
+0 &amp; \text{ for } x < 0 \\
+1 - e^{-x^2/2\sigma^2} &amp; \text{ for } x \ge 0
+\end{cases} " data-equation="eq:cdf">
+	<img src="https://cdn.rawgit.com/distributions-io/rayleigh-cdf/dc9d27df02622b24a327b54d839c83bb3be3f327/docs/img/eqn.svg" alt="Cumulative distribution function for a Rayleigh distribution.">
 	<br>
 </div>
 
@@ -40,32 +43,32 @@ var matrix = require( 'dstructs-matrix' ),
 	i;
 
 out = cdf( 1 );
-// returns
+// returns ~0.393
 
-x = [ -4, -2, 0, 2, 4 ];
+x = [ -1, 0, 1, 2, 3 ];
 out = cdf( x );
-// returns [...]
+// returns [ 0, 0, ~0.393, ~0.865, ~0.989 ]
 
 x = new Float32Array( x );
 out = cdf( x );
-// returns Float64Array( [...] )
+// returns Float64Array( [0,0,~0.393,~0.865,~0.989] )
 
 x = new Float32Array( 6 );
 for ( i = 0; i < 6; i++ ) {
-	x[ i ] = i - 3;
+	x[ i ] = i;
 }
 mat = matrix( x, [3,2], 'float32' );
 /*
-	[ -3 -2
-	  -1  0
-	   1  2 ]
+	[ 0 1
+	  2 3
+	  3 5 ]
 */
 
 out = cdf( mat );
 /*
-	[
-
-	   ]
+	[ 0     ~0.393
+	 ~0.865 ~0.989
+	 ~1     ~1    ]
 */
 ```
 
@@ -81,23 +84,23 @@ The function accepts the following `options`:
 A [Rayleigh](https://en.wikipedia.org/wiki/Rayleigh_distribution) distribution is a function of 1 parameter(s): `sigma`(scale parameter). By default, `sigma` is equal to `1`. To adjust either parameter, set the corresponding option(s).
 
 ``` javascript
-var x = [ -4, -2, 0, 2, 4 ];
+var x = [ -1, 0, 1, 2, 3 ];
 
 var out = cdf( x, {
 	'sigma': 7
 });
-// returns [...]
+// returns [ 0, 0, ~0.0102, ~0.04, ~0.0877 ]
 ```
 
 For non-numeric `arrays`, provide an accessor `function` for accessing `array` values.
 
 ``` javascript
 var data = [
-	[0,-4],
-	[1,-2],
-	[2,0],
+	[0,-1],
+	[1,0],
+	[2,1],
 	[3,2],
-	[4,4],
+	[4,3],
 ];
 
 function getValue( d, i ) {
@@ -107,7 +110,7 @@ function getValue( d, i ) {
 var out = cdf( data, {
 	'accessor': getValue
 });
-// returns [...]
+// returns [ 0, 0, ~0.393, ~0.865, ~0.989 ]
 ```
 
 
@@ -128,11 +131,11 @@ var out = cdf( data, {
 });
 /*
 	[
-		{'x':[0,]},
-		{'x':[1,]},
-		{'x':[2,]},
-		{'x':[3,]},
-		{'x':[4,]},
+		{'x':[0,0]},
+		{'x':[1,0]},
+		{'x':[2,~0.393]},
+		{'x':[3,~0.865]},
+		{'x':[4,~0.989]},
 	]
 */
 
@@ -145,18 +148,18 @@ By default, when provided a [`typed array`](https://developer.mozilla.org/en-US/
 ``` javascript
 var x, out;
 
-x = new Float64Array( [-4,-2,0,2,4] );
+x = new Float64Array( [-1,0,1,2,3] );
 
 out = cdf( x, {
 	'dtype': 'float32'
 });
-// returns Float32Array( [...] )
+// returns Float32Array( [0,0,~0.393,~0.865,~0.989] )
 
 // Works for plain arrays, as well...
-out = cdf( [-4,-2,0,2,4], {
+out = cdf( [-1,0,1,2,3], {
 	'dtype': 'float32'
 });
-// returns Float32Array( [...] )
+// returns Float32Array( [0,0,~0.393,~0.865,~0.989] )
 ```
 
 By default, the function returns a new data structure. To mutate the input data structure (e.g., when input values can be discarded or when optimizing memory usage), set the `copy` option to `false`.
@@ -168,34 +171,35 @@ var bool,
 	x,
 	i;
 
-x = [ -4, -2, 0, 2, 4 ];
+x = [ -1, 0, 1, 2, 3 ];
 
 out = cdf( x, {
 	'copy': false
 });
-// returns [...]
+// returns [ 0, 0, ~0.0102, ~0.04, ~0.0877 ]
 
 bool = ( x === out );
 // returns true
 
 x = new Float32Array( 6 );
 for ( i = 0; i < 6; i++ ) {
-	x[ i ] = i - 3 ;
+	x[ i ] = i;
 }
 mat = matrix( x, [3,2], 'float32' );
 /*
-	[ -3 -2
-	  -1  0
-	   1  2 ]
+	[ 0 1
+	  2 3
+	  3 5 ]
 */
+
 
 out = cdf( mat, {
 	'copy': false
 });
 /*
-	[
-
-	   ]
+	[ 0     ~0.393
+	 ~0.865 ~0.989
+	 ~1     ~1    ]
 */
 
 bool = ( mat === out );
@@ -265,7 +269,7 @@ var data,
 // Plain arrays...
 data = new Array( 10 );
 for ( i = 0; i < data.length; i++ ) {
-	data[ i ] = i - 5;
+	data[ i ] = i / 2;
 }
 out = cdf( data );
 
@@ -296,7 +300,7 @@ out = cdf( data, {
 // Typed arrays...
 data = new Float32Array( 10 );
 for ( i = 0; i < data.length; i++ ) {
-	data[ i ] = i - 5;
+	data[ i ] = i / 2;
 }
 out = cdf( data );
 
